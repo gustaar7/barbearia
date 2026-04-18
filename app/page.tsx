@@ -39,7 +39,7 @@ export default function PageCliente() {
     setLoading(true);
 
     try {
-      const res = await fetch("https://barbearia-fawn-beta.vercel.app/agendamentos", {
+      const res = await fetch("https://barbearia-production-667f.up.railway.app/agendamentos", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
