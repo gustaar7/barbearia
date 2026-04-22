@@ -81,4 +81,8 @@ Tratamento de erro básico
 🐳 Docker para deploy
 📄 Licença
 
+<<<<<<< HEAD
 Este projeto é de uso livre para fins de estudo e melhoria.
+=======
+Este projeto é de uso livre para fins de estudo e melhoria.
+>>>>>>> 60f0098c7ba94fac0cfadb0f175292bf25aa44cb
