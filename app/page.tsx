@@ -22,6 +22,15 @@ const profissionais = [
 
 const horarios = ["09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"];
 
+// Returns today's date in YYYY-MM-DD format (local time)
+function getTodayString() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 export default function PageCliente() {
   const [servico, setServico] = useState("");
   const [profissional, setProfissional] = useState("");
@@ -31,7 +40,9 @@ export default function PageCliente() {
   const [cllCliente, setCllCliente] = useState("");
   const [loading, setLoading] = useState(false);
   const [sucesso, setSucesso] = useState(false);
-  const [horariosOcupados, setHorariosOcupados] = useState<(string | { dataHoraAgendamento: string })[]>([]);
+  const [horariosOcupados, setHorariosOcupados] = useState<string[]>([]);
+  const [loadingHorarios, setLoadingHorarios] = useState(false);
+  const [erro, setErro] = useState("");
 
   const agendar = async () => {
     if (!servico || !profissional || !data || !hora || !cliente || !cllCliente) {
@@ -39,6 +50,7 @@ export default function PageCliente() {
     }
 
     setLoading(true);
+    setErro("");
 
     try {
       const res = await fetch("https://barbearia-production-667f.up.railway.app/agendamentos", {
@@ -62,46 +74,56 @@ export default function PageCliente() {
         setHora("");
         setCliente("");
         setCllCliente("");
+        setHorariosOcupados([]);
         setSucesso(true);
         setTimeout(() => setSucesso(false), 4000);
+      } else {
+        setErro("Erro ao agendar. Tente novamente.");
       }
     } catch (error) {
-      console.log("Erro no agendamento:", error);
+      console.error("Erro no agendamento:", error);
+      setErro("Não foi possível conectar ao servidor.");
     } finally {
       setLoading(false);
     }
   };
 
-  /* muda cor dos horarios ocupados */
-
+  // Busca horários ocupados ao trocar a data
   useEffect(() => {
     if (!data) return;
 
-    fetch(`https://barbearia-production-667f.up.railway.app/api/horarios?data=${data}`)
-      .then(res => res.json())
-      .then(result => setHorariosOcupados(result))
-      .catch(err => console.error(err));
+    setLoadingHorarios(true);
+    setHora(""); // reset hora ao mudar data
 
+    fetch(`https://barbearia-production-667f.up.railway.app/api/horarios?data=${data}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Erro ao buscar horários");
+        return res.json();
+      })
+      .then((result: unknown[]) => {
+        const formatados = result
+          .map((h) => {
+            try {
+              const dataStr = typeof h === "string" ? h : (h as { dataHoraAgendamento: string }).dataHoraAgendamento;
+              return new Date(dataStr).toLocaleTimeString("pt-BR", {
+                hour: "2-digit",
+                minute: "2-digit",
+              });
+            } catch {
+              return undefined;
+            }
+          })
+          .filter(Boolean) as string[];
+        setHorariosOcupados(formatados);
+      })
+      .catch((err) => {
+        console.error("Erro ao buscar horários:", err);
+        setHorariosOcupados([]);
+      })
+      .finally(() => setLoadingHorarios(false));
   }, [data]);
 
-  const horariosOcupadosFormatados = horariosOcupados
-    .map((h: string | { dataHoraAgendamento: string }) => {
-      try {
-        const dataStr = typeof h === "string" ? h : h.dataHoraAgendamento;
-        return new Date(dataStr).toLocaleTimeString("pt-BR", {
-          hour: "2-digit",
-          minute: "2-digit",
-        });
-      } catch {
-        return undefined;
-      }
-    })
-    .filter(Boolean) as string[];
-
-
-
-
-
+  const today = getTodayString();
 
   return (
     <main className="min-h-screen bg-background">
@@ -189,8 +211,9 @@ export default function PageCliente() {
             {servicos.map((s) => (
               <Card
                 key={s.id}
-                className={`cursor-pointer transition-all hover:border-primary ${servico === s.id ? "border-primary bg-primary/10" : "bg-card border-border"
-                  }`}
+                className={`cursor-pointer transition-all hover:border-primary ${
+                  servico === s.id ? "border-primary bg-primary/10" : "bg-card border-border"
+                }`}
                 onClick={() => setServico(s.id)}
               >
                 <CardContent className="p-4 text-center">
@@ -238,6 +261,7 @@ export default function PageCliente() {
               <input
                 type="date"
                 value={data}
+                min={today}
                 onChange={(e) => setData(e.target.value)}
                 className="w-full px-4 py-3 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
               />
@@ -245,10 +269,15 @@ export default function PageCliente() {
 
             {/* Horário */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">Horário</label>
+              <label className="text-sm font-medium text-foreground">
+                Horário
+                {loadingHorarios && (
+                  <span className="ml-2 text-xs text-muted-foreground">Carregando...</span>
+                )}
+              </label>
               <div className="grid grid-cols-4 gap-2">
                 {horarios.map((h) => {
-                  const isOcupado = horariosOcupadosFormatados.includes(h);
+                  const isOcupado = horariosOcupados.includes(h);
                   return (
                     <button
                       key={h}
@@ -257,14 +286,15 @@ export default function PageCliente() {
                         if (isOcupado) return;
                         setHora(h);
                       }}
-                      disabled={isOcupado}
+                      disabled={isOcupado || loadingHorarios}
                       title={isOcupado ? "Horário ocupado" : ""}
-                      className={`py-2 px-3 rounded-lg text-sm font-medium transition-all ${isOcupado
+                      className={`py-2 px-3 rounded-lg text-sm font-medium transition-all ${
+                        isOcupado
                           ? "bg-red-500 text-white cursor-not-allowed opacity-60"
                           : hora === h
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-input border border-border text-foreground hover:border-primary"
-                        }`}
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-input border border-border text-foreground hover:border-primary"
+                      }`}
                     >
                       {h}
                     </button>
@@ -303,26 +333,28 @@ export default function PageCliente() {
               </div>
             </div>
 
+            {/* Mensagem de erro */}
+            {erro && (
+              <p className="text-sm text-red-500 text-center">{erro}</p>
+            )}
+
             {/* Botão Agendar */}
             <Button
               onClick={agendar}
               disabled={loading || !servico || !profissional || !data || !hora || !cliente || !cllCliente}
               className="w-full py-6 text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "Agendando..." : sucesso ? "Agendado com sucesso!" : "Confirmar Agendamento"}
+              {loading ? "Agendando..." : "Confirmar Agendamento"}
             </Button>
 
             {sucesso && (
-
-              <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 ">
+              <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
                 <Sucesso />
               </div>
-
             )}
           </div>
         </div>
       </section>
-
 
       {/* Footer */}
       <footer className="fixed bottom-0 left-0 right-0 bg-card border-t border-border py-3">
