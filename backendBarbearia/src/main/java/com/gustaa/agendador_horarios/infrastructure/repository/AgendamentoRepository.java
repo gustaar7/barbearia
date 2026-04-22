@@ -22,7 +22,7 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
 
     Agendamento findByDataHoraAgendamentoAndCliente(LocalDateTime dataHoraAgendamento, String cliente);
 
-    @Query("SELECT a.dataHoraAgendamento FROM Agendamento  WHERE a.dataHoraAgendamento BETWEEN :inicio AND :fim")
+    @Query("SELECT a.dataHoraAgendamento FROM Agendamento a WHERE a.dataHoraAgendamento BETWEEN :inicio AND :fim")
     List<LocalDateTime> findHorariosByDia(
             @Param("inicio") LocalDateTime inicio,
             @Param("fim") LocalDateTime fim
