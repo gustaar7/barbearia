@@ -95,7 +95,7 @@ export default function PageCliente() {
     setLoadingHorarios(true);
     setHora(""); // reset hora ao mudar data
 
-    fetch(`https://barbearia-production-667f.up.railway.app/api/horarios?data=${data}`)
+    fetch(`https://barbearia-production-667f.up.railway.app/horarios?data=${data}`)
       .then((res) => {
         if (!res.ok) throw new Error("Erro ao buscar horários");
         return res.json();
