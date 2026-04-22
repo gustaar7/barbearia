@@ -68,13 +68,11 @@ http://localhost:8080
 
 ⚠️ Limitações Atuais
 Sem autenticação
-Não impede conflitos de horário
 Sem painel administrativo
 Sem notificações (email/SMS)
 Tratamento de erro básico
 📈 Melhorias Futuras
 🔐 Autenticação com JWT
-📅 Validação de horários disponíveis
 📊 Dashboard para administradores
 📩 Notificações automáticas
 🧪 Testes automatizados
