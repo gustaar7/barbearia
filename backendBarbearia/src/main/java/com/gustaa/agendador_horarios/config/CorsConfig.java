@@ -1,4 +1,4 @@
-package com.javanauta.agendador_horarios.config;
+package com.gustaa.agendador_horarios.config;
 
 import jakarta.annotation.Nonnull;
 import org.springframework.context.annotation.Configuration;

@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Scissors, Clock, Phone, User, Calendar, ChevronDown, MapPin, Instagram } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import Sucesso from "@/components/ui/sucesso";
 
 const servicos = [
   { id: "cabelo", nome: "Corte de Cabelo", preco: "R$ 45" },
@@ -19,7 +20,7 @@ const profissionais = [
   { id: "Barbeiro 3", nome: "Barbeiro 3" },
 ];
 
-const horarios = ["09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00"];
+const horarios = ["09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"];
 
 export default function PageCliente() {
   const [servico, setServico] = useState("");
@@ -30,6 +31,7 @@ export default function PageCliente() {
   const [cllCliente, setCllCliente] = useState("");
   const [loading, setLoading] = useState(false);
   const [sucesso, setSucesso] = useState(false);
+  const [horariosOcupados, setHorariosOcupados] = useState<(string | { dataHoraAgendamento: string })[]>([]);
 
   const agendar = async () => {
     if (!servico || !profissional || !data || !hora || !cliente || !cllCliente) {
@@ -61,7 +63,7 @@ export default function PageCliente() {
         setCliente("");
         setCllCliente("");
         setSucesso(true);
-        setTimeout(() => setSucesso(false), 3000);
+        setTimeout(() => setSucesso(false), 4000);
       }
     } catch (error) {
       console.log("Erro no agendamento:", error);
@@ -69,6 +71,37 @@ export default function PageCliente() {
       setLoading(false);
     }
   };
+
+  /* muda cor dos horarios ocupados */
+
+  useEffect(() => {
+    if (!data) return;
+
+    fetch(`https://barbearia-production-667f.up.railway.app/api/horarios?data=${data}`)
+      .then(res => res.json())
+      .then(result => setHorariosOcupados(result))
+      .catch(err => console.error(err));
+
+  }, [data]);
+
+  const horariosOcupadosFormatados = horariosOcupados
+    .map((h: string | { dataHoraAgendamento: string }) => {
+      try {
+        const dataStr = typeof h === "string" ? h : h.dataHoraAgendamento;
+        return new Date(dataStr).toLocaleTimeString("pt-BR", {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      } catch {
+        return undefined;
+      }
+    })
+    .filter(Boolean) as string[];
+
+
+
+
+
 
   return (
     <main className="min-h-screen bg-background">
@@ -94,7 +127,7 @@ export default function PageCliente() {
       </header>
 
       {/* Hero Section */}
-      <section className="pt-24 pb-8">
+      <section className="pt-24 pb-8 relative">
         <div className="container mx-auto px-4">
           <div className="relative rounded-2xl overflow-hidden">
             <Image
@@ -105,7 +138,7 @@ export default function PageCliente() {
               className="w-full h-64 md:h-80 object-cover"
               priority
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-t from-background via-background/50 to-transparent" />
             <div className="absolute bottom-6 left-6 right-6">
               <h2 className="text-2xl md:text-4xl font-bold text-foreground mb-2 text-balance">
                 Estilo e Tradição
@@ -156,9 +189,8 @@ export default function PageCliente() {
             {servicos.map((s) => (
               <Card
                 key={s.id}
-                className={`cursor-pointer transition-all hover:border-primary ${
-                  servico === s.id ? "border-primary bg-primary/10" : "bg-card border-border"
-                }`}
+                className={`cursor-pointer transition-all hover:border-primary ${servico === s.id ? "border-primary bg-primary/10" : "bg-card border-border"
+                  }`}
                 onClick={() => setServico(s.id)}
               >
                 <CardContent className="p-4 text-center">
@@ -215,20 +247,29 @@ export default function PageCliente() {
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">Horário</label>
               <div className="grid grid-cols-4 gap-2">
-                {horarios.map((h) => (
-                  <button
-                    key={h}
-                    type="button"
-                    onClick={() => setHora(h)}
-                    className={`py-2 px-3 rounded-lg text-sm font-medium transition-all ${
-                      hora === h
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-input border border-border text-foreground hover:border-primary"
-                    }`}
-                  >
-                    {h}
-                  </button>
-                ))}
+                {horarios.map((h) => {
+                  const isOcupado = horariosOcupadosFormatados.includes(h);
+                  return (
+                    <button
+                      key={h}
+                      type="button"
+                      onClick={() => {
+                        if (isOcupado) return;
+                        setHora(h);
+                      }}
+                      disabled={isOcupado}
+                      title={isOcupado ? "Horário ocupado" : ""}
+                      className={`py-2 px-3 rounded-lg text-sm font-medium transition-all ${isOcupado
+                          ? "bg-red-500 text-white cursor-not-allowed opacity-60"
+                          : hora === h
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-input border border-border text-foreground hover:border-primary"
+                        }`}
+                    >
+                      {h}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -272,13 +313,16 @@ export default function PageCliente() {
             </Button>
 
             {sucesso && (
-              <div className="text-center text-green-500 text-sm animate-pulse">
-                Seu horário foi reservado! Esperamos você.
+
+              <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 ">
+                <Sucesso />
               </div>
+
             )}
           </div>
         </div>
       </section>
+
 
       {/* Footer */}
       <footer className="fixed bottom-0 left-0 right-0 bg-card border-t border-border py-3">

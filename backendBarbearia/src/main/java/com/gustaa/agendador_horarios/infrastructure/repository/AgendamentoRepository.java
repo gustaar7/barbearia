@@ -1,9 +1,12 @@
-package com.javanauta.agendador_horarios.infrastructure.repository;
+package com.gustaa.agendador_horarios.infrastructure.repository;
 
-import com.javanauta.agendador_horarios.infrastructure.entity.Agendamento;
+import com.gustaa.agendador_horarios.infrastructure.entity.Agendamento;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -18,4 +21,10 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
     List<Agendamento> findByDataHoraAgendamentoBetween(LocalDateTime dataHoraInicial, LocalDateTime dataHoraFinal);
 
     Agendamento findByDataHoraAgendamentoAndCliente(LocalDateTime dataHoraAgendamento, String cliente);
+
+    @Query("SELECT a.dataHoraAgendamento FROM Agendamento  WHERE a.dataHoraAgendamento BETWEEN :inicio AND :fim")
+    List<LocalDateTime> findHorariosByDia(
+            @Param("inicio") LocalDateTime inicio,
+            @Param("fim") LocalDateTime fim
+    );
 }

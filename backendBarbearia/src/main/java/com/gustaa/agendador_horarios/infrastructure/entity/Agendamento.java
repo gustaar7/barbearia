@@ -1,4 +1,4 @@
-package com.javanauta.agendador_horarios.infrastructure.entity;
+package com.gustaa.agendador_horarios.infrastructure.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

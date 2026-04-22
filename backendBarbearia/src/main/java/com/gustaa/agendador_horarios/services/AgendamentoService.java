@@ -1,7 +1,7 @@
-package com.javanauta.agendador_horarios.services;
+package com.gustaa.agendador_horarios.services;
 
-import com.javanauta.agendador_horarios.infrastructure.entity.Agendamento;
-import com.javanauta.agendador_horarios.infrastructure.repository.AgendamentoRepository;
+import com.gustaa.agendador_horarios.infrastructure.entity.Agendamento;
+import com.gustaa.agendador_horarios.infrastructure.repository.AgendamentoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
