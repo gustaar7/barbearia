@@ -27,4 +27,7 @@ public class Agendamento {
     private LocalDateTime dataInsercao = LocalDateTime.now();
 
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "UsuarioEntity_id", nullable = true)
+    private UsuarioEntity usuario;
 }
