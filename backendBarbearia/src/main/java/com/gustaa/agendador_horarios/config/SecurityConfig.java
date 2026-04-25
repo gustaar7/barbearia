@@ -48,6 +48,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,  "/horarios").permitAll()
                         .requestMatchers(HttpMethod.POST, "/agendamentos").permitAll()
                         .requestMatchers(HttpMethod.GET,  "/agendamentos").permitAll()
+                        .requestMatchers("/error").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/agendamentos").permitAll()
                         .requestMatchers(HttpMethod.PUT,    "/agendamentos").permitAll()
