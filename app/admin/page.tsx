@@ -7,6 +7,7 @@ import {
   ChevronRight, Search, Filter, LogOut, BarChart2, List, X,
   Edit2, Save, CalendarDays,
 } from "lucide-react";
+import { error } from "console";
 
 interface Agendamento {
   id: number;
@@ -437,10 +438,29 @@ function AdminPanel({ onLogout }: { onLogout: () => void }) {
   const handleDelete = async (ag: Agendamento) => {
     if (!confirm(`Cancelar agendamento de ${ag.cliente}?`)) return;
     setDeletingId(ag.id);
-    try {
-      await fetch(`${API}/agendamentos?cliente=${encodeURIComponent(ag.cliente)}&dataHoraAgendamento=${encodeURIComponent(ag.dataHoraAgendamento)}`, { method: "DELETE" });
-      setRefreshKey(k => k + 1);
-    } catch { alert("Erro ao cancelar."); }
+  
+    try{
+
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(
+      `${API}/agendamentos?cliente=${encodeURIComponent(ag.cliente)}&dataHoraAgendamento=${encodeURIComponent(ag.dataHoraAgendamento)}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+      );
+      if(!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+      setRefreshKey(k=> k +1);
+    } catch{
+      alert("Erro ao cancelar.");
+    }
+
+
     finally { setDeletingId(null); }
   };
 
