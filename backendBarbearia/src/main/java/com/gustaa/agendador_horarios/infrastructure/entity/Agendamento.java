@@ -1,5 +1,6 @@
 package com.gustaa.agendador_horarios.infrastructure.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,6 +28,7 @@ public class Agendamento {
     private LocalDateTime dataInsercao = LocalDateTime.now();
 
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "UsuarioEntity_id", nullable = true)
     private UsuarioEntity usuario;

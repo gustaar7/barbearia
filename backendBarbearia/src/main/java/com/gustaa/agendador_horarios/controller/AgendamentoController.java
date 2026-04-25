@@ -18,7 +18,7 @@ public class AgendamentoController {
 
     private final AgendamentoService agendamentoService;
 
-    /** Criar agendamento — funciona com ou sem login */
+
     @PostMapping
     public ResponseEntity<Agendamento> salvar(
             @RequestBody Agendamento agendamento,
@@ -31,6 +31,7 @@ public class AgendamentoController {
         return ResponseEntity.accepted()
                 .body(agendamentoService.salvarAgendamento(agendamento, userId));
     }
+
 
     @DeleteMapping
     public ResponseEntity<Void> deletar(
@@ -60,4 +61,5 @@ public class AgendamentoController {
         Long userId = (Long) auth.getPrincipal();
         return ResponseEntity.ok(agendamentoService.buscarMeusAgendamentos(userId));
     }
+
 }

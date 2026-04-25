@@ -19,6 +19,7 @@ public class HorariosController {
 
     private final AgendamentoRepository agendamentoRepository;
 
+
     @GetMapping
     public ResponseEntity<List<LocalDateTime>> getHorariosOcupados(@RequestParam LocalDate data) {
         LocalDateTime inicio = data.atStartOfDay();
