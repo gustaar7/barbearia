@@ -49,6 +49,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/agendamentos").permitAll()
                         .requestMatchers(HttpMethod.GET,  "/agendamentos").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/agendamentos").permitAll()
+                        .requestMatchers(HttpMethod.PUT,    "/agendamentos").permitAll()
                         // Protected
                         .anyRequest().authenticated()
                 )
