@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Scissors, Eye, EyeOff, UserPlus } from "lucide-react";
-import { useAuth } from "@/app/login/Authcontent";
+import { useAuth } from "@/context/AuthContext";
 
 export default function CadastroPage() {
   const { register } = useAuth();
