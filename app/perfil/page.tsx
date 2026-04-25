@@ -28,7 +28,7 @@ export default function PerfilPage() {
 
   // Populate form when user loads
   useEffect(() => {
-    if (!authLoading && !user) { router.push("/login"); return; }
+    if (!authLoading && !user) { router.push("/"); return; }
     if (user) {
       setNome(user.nome ?? "");
       setTelefone(user.telefone ?? "");

@@ -33,7 +33,7 @@ export default function MeusAgendamentosPage() {
   const [erro, setErro] = useState("");
 
   useEffect(() => {
-    if (!authLoading && !user) { router.push("/login"); return; }
+    if (!authLoading && !user) { router.push("/"); return; }
     if (user) fetchAgendamentos();
   }, [user, authLoading]);
 

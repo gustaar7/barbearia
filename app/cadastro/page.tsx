@@ -135,7 +135,7 @@ export default function CadastroPage() {
 
         <p className="text-center text-sm text-muted-foreground mt-4">
           Já tem conta?{" "}
-          <Link href="/login" className="text-primary hover:underline font-medium">
+          <Link href="/" className="text-primary hover:underline font-medium">
             Entrar
           </Link>
         </p>
