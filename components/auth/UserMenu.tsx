@@ -86,6 +86,29 @@ export default function UserMenu() {
               <LogOut className="w-4 h-4" /> Sair
             </button>
           </div>
+
+          {/*sobre*/}
+
+          <div className="flex flex-col">
+            <div className="text-[13px] flex gap-1 ml-4 mt-60">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-[16px]">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+              </svg>
+
+              <h3>Sobre</h3>
+            </div>
+
+            <div className="flex text-[10px] mt-1 ml-6">
+              <p>Desenvolvido por
+                <span> gustavo Ryan</span>
+              </p>
+            </div>
+            <a href="http://wa.me/5531998676390" className="text-[13px] mt-2 mx-auto text-amber-400">entre em contato</a>
+
+
+
+          </div>
+
         </div>
       )}
     </div>

@@ -12,6 +12,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import Sucesso from "@/components/ui/sucesso";
 import UserMenu from "@/components/auth/UserMenu";
 import { useAuth, useApiFetch } from "@/context/AuthContext";
+import { set } from "date-fns";
 
 const API = "https://barbearia-production-667f.up.railway.app";
 
@@ -43,7 +44,7 @@ export default function AgendamentoPage() {
   const apiFetch = useApiFetch();
   const router = useRouter();
 
-  // Redireciona se não estiver logado
+  // redireciona se nao estiver logado
   useEffect(() => {
     if (!authLoading && !user) router.replace("/");
   }, [user, authLoading, router]);
@@ -70,7 +71,7 @@ export default function AgendamentoPage() {
     }
   }, [user]);
 
-  // Busca horários ocupados ao trocar a data
+  // busca horarios ocupados ao trocar a data
   useEffect(() => {
     if (!data) return;
     setLoadingHorarios(true);
@@ -105,12 +106,19 @@ export default function AgendamentoPage() {
       });
       if (res.ok) {
         setServico(""); setProfissional(""); setData(""); setHora("");
-        // Mantém nome e telefone do usuário
+        // mantem nome e telefone do usuario
         setCliente(user?.nome ?? "");
         setTelefone(user?.telefone ?? "");
         setHorariosOcupados([]);
         setSucesso(true);
         setTimeout(() => setSucesso(false), 4000);
+
+        // se deu certo o agendamento, em 4s ele vai para a parte que ve os proprios agendamentos
+        setTimeout(() => {
+          router.push("/meus-agendamentos");
+        }, 4000);
+        
+
       } else {
         const msg = await res.text().catch(() => "");
         setErro(msg || "Erro ao agendar. Tente novamente.");
@@ -120,7 +128,7 @@ export default function AgendamentoPage() {
     } finally { setLoading(false); }
   };
 
-  // Loading inicial de autenticação
+  // loading inicial de autenticaçao
   if (authLoading || !user) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -276,7 +284,6 @@ export default function AgendamentoPage() {
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground flex items-center gap-1">
                 Nome do cliente
-                <span className="text-xs text-muted-foreground font-normal">(pode alterar)</span>
               </label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
@@ -290,7 +297,6 @@ export default function AgendamentoPage() {
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground flex items-center gap-1">
                 Telefone
-                <span className="text-xs text-muted-foreground font-normal">(pode alterar)</span>
               </label>
               <div className="relative">
                 <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />

@@ -97,7 +97,6 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
             {loading ? "Entrando..." : "Entrar"}
           </button>
         </div>
-        <p className="text-center text-zinc-600 text-xs mt-4">Senha padrão: barber2024</p>
       </div>
     </div>
   );
