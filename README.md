@@ -7,6 +7,9 @@ Sistema web completo para agendamento online de horários em barbearias. Permite
 🔗 Backend em produção:
 https://barbearia-production-667f.up.railway.app
 
+
+Painel admin => rota:/admin | senha: barber2024
+
 📌 Funcionalidades
 📋 Listagem de serviços com preços
 👨‍🔧 Seleção de profissional
